@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <title>Track Editor</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Главная страница</a></li>
+            <li><a href="/tracks">Треки</a></li>
+            <li><a href="/profile">Профиль</a></li>
+	    {% if username %}
+            	<span>{{ username }}</span>
+	    {% else %}
+	    	<li><button id="registerBtn">Войти</button></li>
+	    {% endif %}
+        </ul>
+    </nav>
+
+<!-- Модальное окно для входа -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form class="animate" action="/login" method="post">
+            <h2>Login</h2>
+            <label for="username"><b>Username</b></label>
+            <input type="text" placeholder="Введите имя пользователя" name="username" required>
+            <p>
+            <label for="password"><b>Пароль</b></label>
+            <input type="password" placeholder="Введите пароль" name="password" required>
+            <button type="submit">Вход</button>
+        </form>
+	<p>Нет аккаунта? <a href="#" id="switchToRegister">Зарегистрируйтесь здесь</a></p>
+    </div>
+</div>
+
+<!-- Модальное окно для регистрации -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form class="modal-content animate" action="/create_account" method="post">
+            <h2>Register</h2>
+            <label for="username"><b>Username</b></label>
+            <input type="text" placeholder="Введите имя пользователя" name="username" required>
+            <p>
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Введите почту" name="email" required>
+	    <p>
+            <label for="password"><b>Пароль</b></label>
+            <input type="password" placeholder="Введите пароль" name="password" required>
+            <button type="submit">Регистрация</button>
+	<p>Передумал, у меня есть аккаунт: <a href="#" id="switchToLogin">войти</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="result"></div>
+<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+
+
+    {% block content %}{% endblock %}
+</body>
+</html>

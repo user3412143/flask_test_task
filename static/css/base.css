@@ -1,0 +1,80 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #111;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 10px;
+    width: 15%;
+}
+#modalRegistration {
+    /*position: fixed;*/
+    overflow: none;
+    top: 50%;
+    right: 50%;
+    margin: 1% auto;
+    transform: translate(-50%, -50%);
+    display: block;
+}
+
+#modalRegistration .modal-content {
+    padding: 10px;
+    font-size: 14px;
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+#registerBtn {
+    background: #008EB0; /* цвет фона кнопки */
+    color: #fff; /* цвет текста */
+    border: none; /* Убираем рамку */
+    padding: 1rem 1.5rem; /* Поля вокруг текста */
+    margin-bottom: 1rem;  /* Отступ снизу */
+}
+#registerBtn:hover {
+    background-color: #111;
+}
+

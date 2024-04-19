@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<center><h1>Добро пожаловать в редактор треков Track Editor</h1></center>
+
+<div class="slideshow-container">
+    <div class="slide fade">
+        <img src="{{ url_for('static', filename='img/slide0.jpg') }}" alt="Slide 1">
+	<div class="text">Используя данный сервис вы можете изменять продолжительность аудио файлов.</div>
+    </div>
+    <div class="slide fade">
+        <img src="{{ url_for('static', filename='img/slide1.jpg') }}" alt="Slide 2">
+	<div class="text">Загружайте на сайт ваши аудио файлы, чтобы они были всегда доступными.</div>
+    </div>
+    <div class="slide fade">
+        <img src="{{ url_for('static', filename='img/slide2.jpg') }}" alt="Slide 3">
+	<div class="text">Вы можете анонимно делится вашими файлами и никто не узнает, что именно вы их отправили.
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+{% endblock %}

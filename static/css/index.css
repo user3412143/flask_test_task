@@ -1,0 +1,28 @@
+.slideshow-container {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    position: relative;
+}
+
+.slide-image {
+    width: 700px;
+    height: 300px;
+    display: block;
+    margin: 0 auto;
+}
+
+.text {
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}

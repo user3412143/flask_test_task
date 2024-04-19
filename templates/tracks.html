@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h3>Загрузить audio files (mp3, wav):</h3>
+<p>
+<form method="POST" action="/upload_audio" enctype="multipart/form-data">
+	<input type="file" id="fileInput" name="file" autocomplete="off">
+	<button type="submit" id=UploadBtn>Upload</button>
+</form>
+<h3>Список треков, которые были загружены:</h3>
+{% for track in tracks %}
+    {% set location =  track['location'] %}
+    <strong>Track Name:</strong> {{ track['track_name'] }}<p>
+    <audio controls>
+        <source src="{{ location }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio><button onclick="toggleEditForm('{{ loop.index }}')" id=EditAudioBtn>Edit Audio</button>
+    <p>
+    <div id="editForm_{{ loop.index }}" style="display: none;">
+        <label for="start_time_{{ loop.index }}">Start Time:</label>
+        <input type="text" id="start_time_{{ loop.index }}" name="start_time" placeholder="00:00:00">
+        <label for="end_time_{{ loop.index }}">End Time:</label>
+        <input type="text" id="end_time_{{ loop.index }}" name="end_time" placeholder="00:00:00">
+	<button onclick="editAudio('{{ location }}', 'start_time_{{ loop.index }}', 'end_time_{{ loop.index }}')">Save</button>
+    </div>
+{% endfor %}
+
+
+<script src="{{ url_for('static', filename='js/tracks.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tracks.css') }}">
+
+
+{% endblock %}
+

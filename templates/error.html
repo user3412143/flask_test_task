@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<center>
+<img src="{{ url_for('static', filename='img/404.png') }}" alt="404">
+<p>
+Страница не найдена.
+<p>
+К сожалению, что-то пошло не так.
+<p>
+Вы можете вернуться на <a href="/">главную страницу.</a>
+</center>
+
+{% endblock %}
