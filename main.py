@@ -149,6 +149,9 @@ def upload_audio(username):
     will be added to the database, but only for view on a page."""
 
     upload_dir = app.config['UPLOAD_DIR']
+    if not os.path.isdir(upload_dir):
+        os.mkdir(upload_dir)
+
     file = request.files['file']
     if file.filename == '':
         return json({'error': 'No selected file'})
