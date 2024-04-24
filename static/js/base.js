@@ -21,39 +21,39 @@ document.getElementById('switchToLogin').addEventListener('click', function() {
 });
 
 
+const resultDiv = document.getElementById('result');
+const resultRegDiv = document.getElementById('resultReg');
+const loginModal = document.getElementById('loginModal');
+const registerModal = document.getElementById('registerModal');
 
-async function postData(url = 'http://127.0.0.1:5000', data = {}) {
-    const response = await fetch(url, {
+function handleFormSubmit(endpoint, form, resultElement) {
+    const formData = new FormData(form);
+
+    resultElement.style.display = 'block';
+
+    fetch(endpoint, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultElement.textContent = 'Success: ' + data.success;
+        } else if (data.error) {
+            resultElement.textContent = 'Failed: ' + data.error;
+        }
+        setTimeout(() => {
+            resultElement.style.display = 'none';
+        }, 5000);
     });
-    return response.json();
 }
 
-// Обработчик события отправки формы для логина
-document.getElementById('loginForm').addEventListener('submit', async function(event) {
+loginModal.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const formData = new FormData(this);
-    const data = {
-        username: formData.get('username'),
-        password: formData.get('password')
-    };
-    const response = await postData('/login', data);
-    console.log(response); // Здесь можно обновить содержимое страницы согласно полученному JSON
+    handleFormSubmit('/login', event.target, resultDiv);
 });
 
-// Обработчик события отправки формы для регистрации
-document.getElementById('registerForm').addEventListener('submit', async function(event) {
+registerModal.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const formData = new FormData(this);
-    const data = {
-        username: formData.get('username'),
-        email: formData.get('email'),
-        password: formData.get('password')
-    };
-    const response = await postData('/create_account', data);
-    console.log(response); // Здесь можно обновить содержимое страницы согласно полученному JSON
+    handleFormSubmit('/create_account', event.target, resultRegDiv);
 });

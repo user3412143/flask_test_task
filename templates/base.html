@@ -34,6 +34,7 @@
             <button type="submit">Вход</button>
         </form>
 	<p>Нет аккаунта? <a href="#" id="switchToRegister">Зарегистрируйтесь здесь</a></p>
+	<div id="result"></div>
     </div>
 </div>
 
@@ -41,7 +42,7 @@
 <div id="registerModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <form class="modal-content animate" action="/create_account" method="post">
+        <form class="animate" action="/create_account" method="post">
             <h2>Register</h2>
             <label for="username"><b>Username</b></label>
             <input type="text" placeholder="Введите имя пользователя" name="username" required>
@@ -52,12 +53,12 @@
             <label for="password"><b>Пароль</b></label>
             <input type="password" placeholder="Введите пароль" name="password" required>
             <button type="submit">Регистрация</button>
-	<p>Передумал, у меня есть аккаунт: <a href="#" id="switchToLogin">войти</a></p>
+	    <p>Передумал, у меня есть аккаунт: <a href="#" id="switchToLogin">войти</a></p>
+	    <div id="resultReg"></div>
         </form>
     </div>
 </div>
 
-<div id="result"></div>
 <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
 

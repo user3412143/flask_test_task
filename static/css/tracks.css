@@ -14,7 +14,7 @@
     transition: background-color 0.3s;
 }
 audio {
-    background: #333; 
+    background: #333;
     border-radius: 25px; /* Радиус закругления углов */
 }
 

@@ -41,10 +41,10 @@ li a:hover {
     width: 15%;
 }
 #modalRegistration {
-    /*position: fixed;*/
+    position: fixed;
     overflow: none;
     top: 50%;
-    right: 50%;
+    left: 50%;
     margin: 1% auto;
     transform: translate(-50%, -50%);
     display: block;

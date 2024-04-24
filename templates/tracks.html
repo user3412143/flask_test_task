@@ -4,9 +4,10 @@
 {% block content %}
 <h3>Загрузить audio files (mp3, wav):</h3>
 <p>
-<form method="POST" action="/upload_audio" enctype="multipart/form-data">
+<div id="resultFileDiv"></div>
+<form method="POST" action="/upload_audio" enctype="multipart/form-data" id="uploadForm">
 	<input type="file" id="fileInput" name="file" autocomplete="off">
-	<button type="submit" id=UploadBtn>Upload</button>
+	<button type="submit" id=UploadBtn>Upload</button><br>
 </form>
 <h3>Список треков, которые были загружены:</h3>
 {% for track in tracks %}
@@ -29,7 +30,6 @@
 
 <script src="{{ url_for('static', filename='js/tracks.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tracks.css') }}">
-
 
 {% endblock %}
 

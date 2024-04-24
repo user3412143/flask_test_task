@@ -6,7 +6,6 @@ from flask import (
         render_template, make_response,
         send_from_directory)
 from functools import wraps
-from pydub import AudioSegment
 from werkzeug.utils import secure_filename
 
 from db import Database
@@ -29,7 +28,6 @@ def token_required(f):
         token = request.cookies.get('token') or \
                 request.headers.get('Authorization')
 
-        # BUG: if dd an any token, all be correct
         if not token:
             return jsonify({'message': 'Token is missing'}), 401
         try:
@@ -37,8 +35,8 @@ def token_required(f):
                               algorithms=['HS256'])
             username = data['username']
             user_token = db.get_token(username)
-            if user_token != token or user_token is None:
-                return jsonify({'message': 'Token is missing'}), 401
+            if user_token != token:
+                return jsonify({'message': 'Token is invalid'}), 401
         except Exception:
             return jsonify({'message': 'Invalid token'}), 401
         return f(username, *args, **kwargs)
@@ -55,6 +53,13 @@ def index():
 def download_file(filename):
     upload_dir = app.config['UPLOAD_DIR']
     return send_from_directory(upload_dir, filename)
+
+
+@app.route('/links', methods=['GET'])
+def download_file_via_link(link: str):
+    filename = db.file_via_link(link)
+    download_file(filename)
+
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -79,16 +84,16 @@ def login():
 
     user = db.get_user(username)
     if not user:
-        return jsonify({'message': 'Invalid username or password'}), 401
+        return jsonify({'error': 'Invalid username or password'}), 401
 
     if not user[2] == password:
-        return jsonify({'message': 'Invalid username or password'})
+        return jsonify({'error': 'Invalid username or password'})
     token = jwt.encode({'username': username}, app.config['SECRET_KEY'],
                        algorithm='HS256')
 
     # Save token in a db for an user
     db.update_user_token(username, token)
-    response = make_response(redirect('/'))
+    response = make_response(redirect('tracks'))
     response.set_cookie('token', token)
     return response
 
@@ -99,13 +104,16 @@ def create_account():
     email = request.form.get('email')
     password = request.form.get('password')
 
+    if db.get_user(username):
+        return jsonify({"error": "An user was exist"})
+
     if len(password) < 6:
-        return jsonify({"message": "A password weak"})
+        return jsonify({"error": "A password weak"})
 
     if username == password:
-        return jsonify({"message": "A password equals username. Forbidden"})
+        return jsonify({"error": "A password equals username. Forbidden"})
     db.insert_user(username, password, email)
-    return jsonify({"message": "Account created successfully"})
+    return jsonify({"success": "Account created successfully"})
 
 
 @app.route('/audio_edit', methods=['POST'])
@@ -113,8 +121,11 @@ def create_account():
 def audio_edit(username):
     data = request.get_json()
     track_name = data.get('track_name')
-    begin = int(data.get('begin'))
-    end = int(data.get('end'))
+    try:
+        begin = int(data.get('begin'))
+        end = int(data.get('end'))
+    except ValueError:
+        return jsonify({'error': 'You doesn\'t input a time'})
 
     track_extension = os.path.splitext(track_name)[1]
 
@@ -124,7 +135,7 @@ def audio_edit(username):
     elif track_extension == '.mp3':
         audio = pydub.AudioSegment.from_mp3(track_name)
     else:
-        return jsonify({'message': 'A format file doesn\'t support'})
+        return jsonify({'error': 'A format file doesn\'t support'})
 
     cropped_audio = audio[begin:end]
 
@@ -138,15 +149,15 @@ def audio_edit(username):
     cropped_audio.export(track_name, format='mp3')
     return jsonify({'succes': 'The file was edited'})
 
-    
+
 @app.route('/upload_audio', methods=['POST'])
 @token_required
 def upload_audio(username):
     """Upload a file to the disk.
     1. If an user has a directory -  it will be used.
     2. If the directory does't exist, it will be created and added to the DB.
-    For each file, a random fake name will be generated; the real name
-    will be added to the database, but only for view on a page."""
+    For each file, a random fake name will be generated; the real name will be
+    added to the database, but only for view on a page."""
 
     upload_dir = app.config['UPLOAD_DIR']
     if not os.path.isdir(upload_dir):
@@ -154,35 +165,40 @@ def upload_audio(username):
 
     file = request.files['file']
     if file.filename == '':
-        return json({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file'})
 
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
 
     file_extension = file.filename.rsplit('.', 1)[1].lower()
 
-    if not file_extension in ('mp3', 'wav'):
+    if file_extension not in ('mp3', 'wav'):
         return jsonify({'error': 'Invalid file format. Only mp3, wav'})
     filename = secure_filename(file.filename)
     # Get user's directory; create it if it doesn't exist.
     user_dir = db.get_user_dir(username)
     if user_dir is None:
         user_dir = prng(16)
+        while os.path.isdir(user_dir):
+            user_dir = prng(16)
         upload_dir = os.path.join(upload_dir, user_dir)
         os.mkdir(upload_dir)
         db.set_user_dir(username, user_dir)
     else:
         upload_dir = os.path.join(upload_dir, user_dir)
 
-    # Create a random file name for the track
-    fake_name = f'{prng(10)}.{file_extension}'
-    if os.path.isfile(filename):
-        fake_name = prng(10)
+    fake_name = get_fake_name(file_extension)
+    while os.path.isfile(os.path.join(upload_dir, filename)):
+        fake_name = get_fake_name()
     path = os.path.join(upload_dir, fake_name)
     db.add_track(username, filename, fake_name, path)
     file.save(path)
-    return jsonify({"success": "Audio uploaded successfully"})
+    return jsonify({"success": f"Audio uploaded successfully: {filename}"})
 
+
+def get_fake_name(extension: str):
+    out = f'{prng(10)}.{extension}'
+    return out
 
 
 if __name__ == "__main__":
